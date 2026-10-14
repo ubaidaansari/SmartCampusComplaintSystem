@@ -1,0 +1,182 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            margin: 0;
+            padding: 25px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px #cccccc;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1d4ed8;
+        }
+
+        .summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .card {
+            flex: 1;
+            min-width: 150px;
+            padding: 18px;
+            background: #eff6ff;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1d4ed8;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #dddddd;
+            text-align: left;
+        }
+
+        th {
+            background: #1d4ed8;
+            color: white;
+        }
+
+        select, button {
+            padding: 8px;
+            border-radius: 5px;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        a {
+            color: #1d4ed8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+        <p>Smart Campus Complaint Management System</p>
+
+        <div class="summary">
+            <div class="card">
+                <div>Total Complaints</div>
+                <div class="number">{{ total }}</div>
+            </div>
+
+            <div class="card">
+                <div>Submitted</div>
+                <div class="number">{{ submitted }}</div>
+            </div>
+
+            <div class="card">
+                <div>In Progress</div>
+                <div class="number">{{ in_progress }}</div>
+            </div>
+
+            <div class="card">
+                <div>Resolved</div>
+                <div class="number">{{ resolved }}</div>
+            </div>
+        </div>
+
+        <h2>All Complaints</h2>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Student</th>
+                        <th>Category</th>
+                        <th>Location</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Update Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for complaint in complaints %}
+                    <tr>
+                        <td>{{ complaint['id'] }}</td>
+                        <td>{{ complaint['student_name'] }}</td>
+                        <td>{{ complaint['category'] }}</td>
+                        <td>{{ complaint['location'] }}</td>
+                        <td>{{ complaint['description'] }}</td>
+                        <td>{{ complaint['status'] }}</td>
+
+                        <td>
+                            <form method="POST"
+                                  action="/admin/update/{{ complaint['id'] }}">
+                                <select name="status" required>
+                                    <option value="Submitted"
+                                        {% if complaint['status'] == 'Submitted' %}selected{% endif %}>
+                                        Submitted
+                                    </option>
+
+                                    <option value="In Progress"
+                                        {% if complaint['status'] == 'In Progress' %}selected{% endif %}>
+                                        In Progress
+                                    </option>
+
+                                    <option value="Resolved"
+                                        {% if complaint['status'] == 'Resolved' %}selected{% endif %}>
+                                        Resolved
+                                    </option>
+                                </select>
+
+                                <button type="submit">Update</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7">No complaints found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <p><a href="/">Back to Complaint Form</a></p>
+    </div>
+</body>
+</html>
+```
