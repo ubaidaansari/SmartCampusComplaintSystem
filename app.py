@@ -191,7 +191,10 @@ def submit_complaint():
     """
 
 
-# Start application
+
+# Create database when the application starts
+create_database()
+
+# Start application locally
 if __name__ == "__main__":
-    create_database()
     app.run(debug=True)
