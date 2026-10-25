@@ -9,12 +9,16 @@ app = Flask(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 if os.environ.get("RENDER"):
-    DATABASE = "/var/data/complaints.db"
+    import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATABASE = os.path.join(BASE_DIR, "complaints.db")
 else:
     DATABASE = os.path.join(BASE_DIR, "complaints.db")
 # Database create karna
 def create_database():
     connection = sqlite3.connect(DATABASE)
+    
 
     connection.execute("""
         CREATE TABLE IF NOT EXISTS complaints (
