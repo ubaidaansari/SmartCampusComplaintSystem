@@ -5,16 +5,11 @@ from ml_model import predict_category
 
 app = Flask(__name__)
 
-# Database ka correct path
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-if os.environ.get("RENDER"):
-    import os
-
+# Database path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE = os.path.join(BASE_DIR, "complaints.db")
-else:
-    DATABASE = os.path.join(BASE_DIR, "complaints.db")
+
 # Database create karna
 def create_database():
     connection = sqlite3.connect(DATABASE)
