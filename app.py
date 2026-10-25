@@ -1,3 +1,4 @@
+```python
 import os
 import sqlite3
 from flask import Flask, render_template, request
@@ -5,15 +6,24 @@ from ml_model import predict_category
 
 app = Flask(__name__)
 
-
 # Database path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATABASE = os.path.join(BASE_DIR, "complaints.db")
+
+DATABASE = os.environ.get(
+    "DATABASE_PATH",
+    os.path.join(BASE_DIR, "complaints.db")
+)
+
 
 # Database create karna
 def create_database():
+    # Create database folder if it does not exist
+    database_folder = os.path.dirname(DATABASE)
+
+    if database_folder:
+        os.makedirs(database_folder, exist_ok=True)
+
     connection = sqlite3.connect(DATABASE)
-    
 
     connection.execute("""
         CREATE TABLE IF NOT EXISTS complaints (
@@ -39,7 +49,9 @@ def home():
 # Complaint tracking
 @app.route("/track", methods=["GET"])
 def track_complaint():
-    complaint_id = request.args.get("complaint_id", "").strip()
+    complaint_id = request.args.get(
+        "complaint_id", ""
+    ).strip()
 
     if not complaint_id.isdigit() or int(complaint_id) < 1:
         return "Please enter a valid Complaint ID.", 400
@@ -84,15 +96,18 @@ def admin_dashboard():
     total = len(complaints)
 
     submitted = sum(
-        1 for c in complaints if c["status"] == "Submitted"
+        1 for c in complaints
+        if c["status"] == "Submitted"
     )
 
     in_progress = sum(
-        1 for c in complaints if c["status"] == "In Progress"
+        1 for c in complaints
+        if c["status"] == "In Progress"
     )
 
     resolved = sum(
-        1 for c in complaints if c["status"] == "Resolved"
+        1 for c in complaints
+        if c["status"] == "Resolved"
     )
 
     connection.close()
@@ -108,7 +123,10 @@ def admin_dashboard():
 
 
 # Update complaint status
-@app.route("/admin/update/<int:complaint_id>", methods=["POST"])
+@app.route(
+    "/admin/update/<int:complaint_id>",
+    methods=["POST"]
+)
 def update_complaint_status(complaint_id):
     new_status = request.form.get("status", "")
 
@@ -129,7 +147,9 @@ def update_complaint_status(complaint_id):
     )
 
     connection.commit()
+
     updated_rows = cursor.rowcount
+
     connection.close()
 
     if updated_rows == 0:
@@ -161,7 +181,12 @@ def submit_complaint():
     ).strip()
 
     # Check all required fields
-    if not all([student_name, category, location, description]):
+    if not all([
+        student_name,
+        category,
+        location,
+        description
+    ]):
         return "Please fill in all fields.", 400
 
     # Predict category using the ML model
@@ -174,7 +199,12 @@ def submit_complaint():
         INSERT INTO complaints
         (student_name, category, location, description)
         VALUES (?, ?, ?, ?)
-    """, (student_name, category, location, description))
+    """, (
+        student_name,
+        category,
+        location,
+        description
+    ))
 
     complaint_id = cursor.lastrowid
 
@@ -183,17 +213,20 @@ def submit_complaint():
 
     return f"""
         <h1>Complaint Submitted Successfully!</h1>
-        <p>Your Complaint ID is: <strong>{complaint_id}</strong></p>
-        <p>Predicted Category: <strong>{category}</strong></p>
+        <p>Your Complaint ID is:
+        <strong>{complaint_id}</strong></p>
+        <p>Predicted Category:
+        <strong>{category}</strong></p>
         <p>Status: Submitted</p>
         <a href="/">Submit another complaint</a>
     """
 
 
-
-# Create database when the application starts
+# Create database when application starts
 create_database()
+
 
 # Start application locally
 if __name__ == "__main__":
     app.run(debug=True)
+```
