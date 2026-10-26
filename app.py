@@ -1,4 +1,3 @@
-```python
 import os
 import sqlite3
 from flask import Flask, render_template, request
@@ -229,4 +228,3 @@ create_database()
 # Start application locally
 if __name__ == "__main__":
     app.run(debug=True)
-```
