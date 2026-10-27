@@ -8,10 +8,10 @@ app = Flask(__name__)
 # Database path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-DATABASE = os.environ.get(
-    "DATABASE_PATH",
-    os.path.join(BASE_DIR, "complaints.db")
-)
+if os.environ.get("RENDER"):
+    DATABASE = "/tmp/complaints.db"
+else:
+    DATABASE = os.path.join(BASE_DIR, "complaints.db")
 
 
 # Database create karna
